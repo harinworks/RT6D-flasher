@@ -1,119 +1,119 @@
 # RT880 Radio Flasher
 
-Un conjunto de herramientas para flashear firmwares en radios RT880 a través de conexión serial.
+A toolkit for flashing firmware to RT880 radios via serial connection.
 
-## Descripción
+## Description
 
-Este proyecto incluye dos programas principales:
+This project includes two main programs:
 
-1. **rt880-flasher** (`main.go`) - Flasheador principal para subir firmware a radios RT880
-2. **hex2bin** (`hex2bin.go`) - Convertidor de archivos Intel HEX a binario
+1. **rt880-flasher** (`main.go`) - Main flasher for uploading firmware to RT880 radios
+2. **hex2bin** (`hex2bin.go`) - Intel HEX to binary file converter
 
-## Construcción
+## Building
 
-### Prerequisitos
+### Prerequisites
 
-- Go 1.21 o superior
-- Dependencia: `go.bug.st/serial` (se descarga automáticamente)
+- Go 1.21 or higher
+- Dependency: `go.bug.st/serial` (downloaded automatically)
 
-### Compilar ambos binarios
+### Compile both binaries
 
 ```bash
-# Compilar el flasheador principal
+# Compile the main flasher
 go build -o rt880-flasher main.go
 
-# Compilar el convertidor hex2bin
+# Compile the hex2bin converter
 go build -o hex2bin hex2bin.go
 ```
 
-### Descargar dependencias
+### Download dependencies
 
 ```bash
 go mod download
 ```
 
-## Uso
+## Usage
 
 ### RT880-Flasher
 
 ```bash
-./rt880-flasher <puerto_serie> <archivo_firmware>
+./rt880-flasher <serial_port> <firmware_file>
 ```
 
-**Ejemplos:**
+**Examples:**
 ```bash
-# En Linux/macOS
+# On Linux/macOS
 ./rt880-flasher /dev/cu.wchusbserial112410 firmware.hex
 ./rt880-flasher /dev/ttyUSB0 firmware.bin
 
-# En Windows
+# On Windows
 ./rt880-flasher COM3 firmware.hex
 ```
 
-**Formatos de firmware soportados:**
+**Supported firmware formats:**
 - Intel HEX (`.hex`)
-- Binario (`.bin`)
+- Binary (`.bin`)
 
-**Procedimiento de flasheo:**
-1. Conectar el cable de datos al radio
-2. Apagar completamente el radio
-3. Mantener presionado el botón PTT
-4. Mientras se mantiene PTT, encender el radio
-5. Mantener PTT por 2-3 segundos después del encendido
-6. Soltar PTT - el radio debe estar en modo programación
-7. Presionar Enter para iniciar la actualización
+**Flashing procedure:**
+1. Connect the data cable to the radio
+2. Turn OFF the radio completely
+3. Press and HOLD the PTT key
+4. While holding PTT, turn ON the radio
+5. Keep holding PTT for 2-3 seconds after power on
+6. Release PTT - radio should be in programming mode
+7. Press Enter to start the update
 
 ### Hex2Bin Converter
 
 ```bash
-./hex2bin <archivo_hex_entrada> <archivo_bin_salida>
+./hex2bin <input_hex_file> <output_bin_file>
 ```
 
-**Ejemplo:**
+**Example:**
 ```bash
 ./hex2bin allcode.txt firmware_converted.bin
 ```
 
-## Características
+## Features
 
 ### RT880-Flasher
-- Detección automática de puertos serie disponibles
-- Soporte para archivos Intel HEX y binarios
-- Protocolo de comunicación con retries y timeouts
-- Verificación de checksums
-- Progreso en tiempo real
-- Manejo robusto de errores
+- Automatic detection of available serial ports
+- Support for Intel HEX and binary files
+- Communication protocol with retries and timeouts
+- Checksum verification
+- Real-time progress reporting
+- Robust error handling
 
 ### Hex2Bin
-- Conversión precisa de Intel HEX a binario
-- Soporte para registros extendidos de dirección
-- Mapeo de direcciones ARM específico para RT880
-- Validación de formato
+- Accurate Intel HEX to binary conversion
+- Support for extended address records
+- RT880-specific ARM address mapping
+- Format validation
 
-## Archivos del Proyecto
+## Project Files
 
-- `main.go` - Código fuente del flasheador principal
-- `hex2bin.go` - Código fuente del convertidor
-- `go.mod` / `go.sum` - Configuración de dependencias Go
-- `RT880G-V1_12.HEX` / `RT880G-V1_12.BIN` - Archivos de firmware de ejemplo
-- `allcode.txt` - Archivo Intel HEX de ejemplo
-- `convert.sh` - Script de conversión auxiliar
+- `main.go` - Main flasher source code
+- `hex2bin.go` - Converter source code
+- `go.mod` / `go.sum` - Go dependency configuration
+- `RT880G-V1_12.HEX` / `RT880G-V1_12.BIN` - Sample firmware files
+- `allcode.txt` - Sample Intel HEX file
+- `convert.sh` - Auxiliary conversion script
 
-## Configuración Serial
+## Serial Configuration
 
-- **Baudios:** 115200
-- **Bits de datos:** 8
-- **Paridad:** Ninguna
-- **Bits de parada:** 1
+- **Baud Rate:** 115200
+- **Data Bits:** 8
+- **Parity:** None
+- **Stop Bits:** 1
 
-## Solución de Problemas
+## Troubleshooting
 
-1. **Puerto no encontrado:** Verificar que el dispositivo esté conectado y los drivers instalados
-2. **Error de comunicación:** Asegurar que el radio esté en modo programación (seguir procedimiento PTT)
-3. **Checksum error:** Verificar integridad del archivo de firmware
-4. **Timeout:** Revisar conexión del cable y estado del radio
+1. **Port not found:** Verify the device is connected and drivers are installed
+2. **Communication error:** Ensure the radio is in programming mode (follow PTT procedure)
+3. **Checksum error:** Verify firmware file integrity
+4. **Timeout:** Check cable connection and radio status
 
-## Compilación en Diferentes Plataformas
+## Cross-Platform Compilation
 
 ```bash
 # Linux AMD64
