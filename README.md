@@ -4,10 +4,12 @@ A toolkit for flashing firmware to RT880 radios via serial connection.
 
 ## Description
 
-This project includes two main programs:
+This project includes four main programs:
 
 1. **rt880-flasher** (`main.go`) - Main flasher for uploading firmware to RT880 radios
 2. **hex2bin** (`hex2bin.go`) - Intel HEX to binary file converter
+3. **spi-tool** (`spi-tool.go`) - SPI flash backup and restore utility
+4. **spi-flash** (`spi-flash.go`) - Alternative SPI flash tool
 
 ## Building
 
@@ -16,7 +18,7 @@ This project includes two main programs:
 - Go 1.21 or higher
 - Dependency: `go.bug.st/serial` (downloaded automatically)
 
-### Compile both binaries
+### Compile all binaries
 
 ```bash
 # Compile the main flasher
@@ -24,6 +26,15 @@ go build -o rt880-flasher main.go
 
 # Compile the hex2bin converter
 go build -o hex2bin hex2bin.go
+
+# Compile the SPI tool
+go build -o spi-tool spi-tool.go
+
+# Compile the alternative SPI flash tool
+go build -o spi-flash spi-flash.go
+
+# Or use the build script
+./build.sh
 ```
 
 ### Download dependencies
@@ -74,6 +85,32 @@ go mod download
 ./hex2bin allcode.txt firmware_converted.bin
 ```
 
+### SPI Tool
+
+```bash
+./spi-tool <command> <serial_port> <file>
+```
+
+**Commands:**
+- `backup` - Backup SPI flash to file
+- `restore` - Restore SPI flash from file
+
+**Examples:**
+```bash
+# Backup SPI flash
+./spi-tool backup /dev/cu.wchusbserial112410 spi_backup.bin
+./spi-tool backup COM3 spi_backup.bin
+
+# Restore SPI flash
+./spi-tool restore /dev/ttyUSB0 spi_backup.bin
+./spi-tool restore COM3 spi_backup.bin
+```
+
+**SPI Tool procedure:**
+1. Connect the data cable to the radio
+2. Turn ON the radio normally (no special procedure needed)
+3. Press Enter to start backup/restore operation
+
 ## Features
 
 ### RT880-Flasher
@@ -90,14 +127,48 @@ go mod download
 - RT880-specific ARM address mapping
 - Format validation
 
+### SPI Tool
+- Complete SPI flash backup (4MB)
+- SPI flash restore from backup file
+- Block-by-block operation with progress indication
+- Checksum verification for data integrity
+- Automatic retry mechanism for failed operations
+
 ## Project Files
 
+### Source Code
 - `main.go` - Main flasher source code
 - `hex2bin.go` - Converter source code
+- `spi-tool.go` - SPI tool source code
+- `spi-flash.go` - Alternative SPI flash tool
 - `go.mod` / `go.sum` - Go dependency configuration
-- `RT880G-V1_12.HEX` / `RT880G-V1_12.BIN` - Sample firmware files
-- `allcode.txt` - Sample Intel HEX file
-- `convert.sh` - Auxiliary conversion script
+
+### Compiled Binaries
+- `rt880-flasher` - Main flasher executable
+- `rt880-flasher-windows-arm64` - Windows ARM64 build
+- `hex2bin` - Converter executable
+- `spi-tool` - SPI tool executable
+- `spi-flash` - Alternative SPI flash executable
+
+### Firmware Files
+- `HEX/` - Intel HEX firmware files directory
+  - `RT880-V1_12A.HEX`
+  - `RT880G-V1_12.HEX`
+- `BIN/` - Binary firmware files directory
+  - `RT880-V1_12A.BIN`
+  - `RT880G-V1_12.BIN`
+- `RT880G_V1.14.bin` - Firmware v1.14 for RT880G
+- `RT880_V1.14.bin` - Firmware v1.14 for RT880
+- `RT880-V1_12A.cs` - C# source for RT880 v1.12A
+- `RT880G-V1_12.cs` - C# source for RT880G v1.12
+
+### Scripts and Tools
+- `build.sh` - Build script
+- `dist/` - Distribution directory
+
+### Backup Files
+- `kk.bin`, `kk.spi` - Sample backup files
+- `spi.bin`, `spi2.bin`, `spi3.bin` - SPI flash backup files
 
 ## Serial Configuration
 
