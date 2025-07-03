@@ -41,22 +41,37 @@ type Flasher struct {
 	sendUpdate  []byte
 	sendbufRight []byte
 	sendbufError []byte
+	checksumOffset byte // Different checksum offset for different radio types
 }
 
-func NewFlasher() *Flasher {
+func NewFlasher(useIRadio bool) *Flasher {
 	f := &Flasher{
 		sendbuf:       make([]byte, 2052),
 		recvbuf:       make([]byte, 29),
 		hex:           make([]byte, 251904),
-		sendConnect:   []byte{57, 51, 5, 16, 211},
-		sendEnd:       []byte{57, 51, 5, 238, 177},
-		sendUpdate:    []byte{57, 51, 5, 85, 24},
 		sendbufRight:  []byte{6},
 		sendbufError:  []byte{255},
 		allcode:       "", // Will be loaded from file or kept empty as requested
 		maxRetries:    3,
 		packetTimeout: 3 * time.Second,
 	}
+	
+	if useIRadio {
+		// iRadio parameters (current default)
+		f.sendConnect = []byte{57, 51, 5, 16, 129}
+		f.sendEnd = []byte{57, 51, 5, 238, 95}
+		f.sendUpdate = []byte{57, 51, 5, 85, 198}
+		f.checksumOffset = 0 // iRadio uses +82 offset
+		fmt.Println("Using iRadio protocol parameters")
+	} else {
+		// Retevis/Radtel parameters (original/older protocol)
+		f.sendConnect = []byte{57, 51, 5, 16, 211}
+		f.sendEnd = []byte{57, 51, 5, 238, 177}
+		f.sendUpdate = []byte{57, 51, 5, 85, 24}
+		f.checksumOffset = 82 // Retevis/Radtel uses no additional offset
+		fmt.Println("Using Retevis/Radtel protocol parameters")
+	}
+	
 	f.sendbuf[0] = 87
 	return f
 }
@@ -290,7 +305,7 @@ func (f *Flasher) checksum(array []byte, length int) byte {
 	for i := 0; i < length-1; i++ {
 		sum += array[i]
 	}
-	return sum + 82
+	return sum + f.checksumOffset
 }
 
 func (f *Flasher) charToInt(char rune) int {
@@ -639,16 +654,18 @@ func (f *Flasher) startUpdate(portName string) error {
 }
 
 func showUsage() {
-	fmt.Printf("Usage: %s <port> <firmware_file>\n", os.Args[0])
+	fmt.Printf("Usage: %s [options] <port> <firmware_file>\n", os.Args[0])
 	fmt.Println("\nArguments:")
 	fmt.Println("  port          Serial port (e.g., /dev/ttyUSB0, COM3)")
 	fmt.Println("  firmware_file Firmware file (.hex or .bin)")
+	fmt.Println("\nOptions:")
+	fmt.Println("  -iradio       Use iRadio protocol parameters (for older radio models)")
 	fmt.Println("\nExamples:")
 	fmt.Printf("  %s /dev/cu.wchusbserial112410 firmware.hex\n", os.Args[0])
-	fmt.Printf("  %s COM3 firmware.bin\n", os.Args[0])
+	fmt.Printf("  %s -iradio COM3 firmware.bin\n", os.Args[0])
 	fmt.Println("\nAvailable serial ports:")
 	
-	flasher := NewFlasher()
+	flasher := NewFlasher(false)
 	ports := flasher.getAvailablePorts()
 	for _, port := range ports {
 		fmt.Printf("  %s\n", port)
@@ -656,17 +673,33 @@ func showUsage() {
 }
 
 func main() {
-	// Check command line arguments
-	if len(os.Args) != 3 {
+	// Parse command line arguments
+	useIRadio := false
+	var portName, firmwareFile string
+	
+	args := os.Args[1:] // Remove program name
+	
+	// Check for -iradio flag
+	for i, arg := range args {
+		if arg == "-iradio" {
+			useIRadio = true
+			// Remove the flag from args
+			args = append(args[:i], args[i+1:]...)
+			break
+		}
+	}
+	
+	// Check remaining arguments
+	if len(args) != 2 {
 		showUsage()
 		os.Exit(1)
 	}
 	
-	portName := os.Args[1]
-	firmwareFile := os.Args[2]
+	portName = args[0]
+	firmwareFile = args[1]
 	
 	// Verify port exists
-	flasher := NewFlasher()
+	flasher := NewFlasher(useIRadio)
 	ports := flasher.getAvailablePorts()
 	portFound := false
 	for _, port := range ports {
