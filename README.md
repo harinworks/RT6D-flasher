@@ -48,8 +48,11 @@ go mod download
 ### RT880-Flasher
 
 ```bash
-./rt880-flasher <serial_port> <firmware_file>
+./rt880-flasher <serial_port> <firmware_file> [flags]
 ```
+
+**Flags:**
+- `-iradio` - Use for Iradio UV98 Plus model
 
 **Examples:**
 ```bash
@@ -57,8 +60,15 @@ go mod download
 ./rt880-flasher /dev/cu.wchusbserial112410 firmware.hex
 ./rt880-flasher /dev/ttyUSB0 firmware.bin
 
+# For Iradio UV98 Plus
+./rt880-flasher /dev/cu.wchusbserial112410 firmware.hex -iradio
+./rt880-flasher /dev/ttyUSB0 firmware.bin -iradio
+
 # On Windows
 ./rt880-flasher COM3 firmware.hex
+
+# For Iradio UV98 Plus on Windows
+./rt880-flasher COM3 firmware.hex -iradio
 ```
 
 **Supported firmware formats:**
