@@ -1,4 +1,4 @@
-module rt880-flasher
+module rt6d-flasher
 
 go 1.21
 

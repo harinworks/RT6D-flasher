@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# RT880 Radio Flasher - Cross-platform build script
+# RT6D Radio Flasher - Cross-platform build script
 # Generates binaries for Linux, Windows, and macOS (both architectures)
 
 set -e  # Exit on any error
@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 VERSION=$(date +"%Y%m%d-%H%M%S")
 BUILD_DIR="dist"
 
-echo -e "${BLUE}RT880 Radio Flasher - Cross-platform Build Script${NC}"
+echo -e "${BLUE}RT6D Radio Flasher - Cross-platform Build Script${NC}"
 echo -e "${BLUE}=================================================${NC}"
 echo "Build version: $VERSION"
 echo ""
@@ -78,12 +78,12 @@ build_binary() {
     echo ""
 }
 
-# Build rt880-flasher for all platforms
-echo -e "${YELLOW}Building rt880-flasher...${NC}"
+# Build rt6d-flasher for all platforms
+echo -e "${YELLOW}Building rt6d-flasher...${NC}"
 echo "=========================="
 for platform in "${PLATFORMS[@]}"; do
     IFS='/' read -r goos goarch <<< "$platform"
-    build_binary "main.go" "rt880-flasher" "$goos" "$goarch" ""
+    build_binary "main.go" "rt6d-flasher" "$goos" "$goarch" ""
 done
 
 # Build hex2bin for all platforms
@@ -114,17 +114,17 @@ cd $BUILD_DIR
 # Function to create archives
 create_archive() {
     local platform=$1
-    local archive_name="rt880-flasher-${platform}-${VERSION}"
+    local archive_name="rt6d-flasher-${platform}-${VERSION}"
     
     echo -e "${BLUE}Creating archive for ${platform}...${NC}"
     
     if [ "$platform" = "windows-amd64" ] || [ "$platform" = "windows-arm64" ]; then
         # Windows - create ZIP
-        zip -q "${archive_name}.zip" rt880-flasher-${platform}.exe hex2bin-${platform}.exe spi-tool-${platform}.exe
+        zip -q "${archive_name}.zip" rt6d-flasher-${platform}.exe hex2bin-${platform}.exe spi-tool-${platform}.exe
         echo -e "${GREEN}✓ Created: ${archive_name}.zip${NC}"
     else
         # Unix-like - create tar.gz
-        tar -czf "${archive_name}.tar.gz" rt880-flasher-${platform} hex2bin-${platform} spi-tool-${platform}
+        tar -czf "${archive_name}.tar.gz" rt6d-flasher-${platform} hex2bin-${platform} spi-tool-${platform}
         echo -e "${GREEN}✓ Created: ${archive_name}.tar.gz${NC}"
     fi
 }
@@ -161,9 +161,9 @@ echo ""
 echo -e "${GREEN}Build completed successfully!${NC}"
 echo ""
 echo -e "${YELLOW}Usage examples:${NC}"
-echo "  Linux:   ./dist/rt880-flasher-linux-amd64 /dev/ttyUSB0 firmware.hex"
-echo "  Windows: ./dist/rt880-flasher-windows-amd64.exe COM3 firmware.hex"
-echo "  macOS:   ./dist/rt880-flasher-darwin-arm64 /dev/cu.usbserial firmware.hex"
+echo "  Linux:   ./dist/rt6d-flasher-linux-amd64 /dev/ttyUSB0 firmware.hex"
+echo "  Windows: ./dist/rt6d-flasher-windows-amd64.exe COM3 firmware.hex"
+echo "  macOS:   ./dist/rt6d-flasher-darwin-arm64 /dev/cu.usbserial firmware.hex"
 echo ""
 echo -e "${YELLOW}Converter examples:${NC}"
 echo "  Linux:   ./dist/hex2bin-linux-amd64 input.hex output.bin"

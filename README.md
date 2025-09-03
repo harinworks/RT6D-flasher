@@ -1,12 +1,12 @@
-# RT880 Radio Flasher
+# RT6D Radio Flasher
 
-A toolkit for flashing firmware to RT880 radios via serial connection.
+A toolkit for flashing firmware to RT6D radios via serial connection.
 
 ## Description
 
 This project includes four main programs:
 
-1. **rt880-flasher** (`main.go`) - Main flasher for uploading firmware to RT880 radios
+1. **rt6d-flasher** (`main.go`) - Main flasher for uploading firmware to RT6D radios
 2. **hex2bin** (`hex2bin.go`) - Intel HEX to binary file converter
 3. **spi-tool** (`spi-tool.go`) - SPI flash backup and restore utility
 4. **spi-flash** (`spi-flash.go`) - Alternative SPI flash tool
@@ -22,7 +22,7 @@ This project includes four main programs:
 
 ```bash
 # Compile the main flasher
-go build -o rt880-flasher main.go
+go build -o rt6d-flasher main.go
 
 # Compile the hex2bin converter
 go build -o hex2bin hex2bin.go
@@ -45,10 +45,10 @@ go mod download
 
 ## Usage
 
-### RT880-Flasher
+### RT6D-Flasher
 
 ```bash
-./rt880-flasher <serial_port> <firmware_file> [flags]
+./rt6d-flasher <serial_port> <firmware_file> [flags]
 ```
 
 **Flags:**
@@ -57,18 +57,18 @@ go mod download
 **Examples:**
 ```bash
 # On Linux/macOS
-./rt880-flasher /dev/cu.wchusbserial112410 firmware.hex
-./rt880-flasher /dev/ttyUSB0 firmware.bin
+./rt6d-flasher /dev/cu.wchusbserial112410 firmware.hex
+./rt6d-flasher /dev/ttyUSB0 firmware.bin
 
 # For Iradio UV98 Plus
-./rt880-flasher /dev/cu.wchusbserial112410 firmware.hex -iradio
-./rt880-flasher /dev/ttyUSB0 firmware.bin -iradio
+./rt6d-flasher /dev/cu.wchusbserial112410 firmware.hex -iradio
+./rt6d-flasher /dev/ttyUSB0 firmware.bin -iradio
 
 # On Windows
-./rt880-flasher COM3 firmware.hex
+./rt6d-flasher COM3 firmware.hex
 
 # For Iradio UV98 Plus on Windows
-./rt880-flasher COM3 firmware.hex -iradio
+./rt6d-flasher COM3 firmware.hex -iradio
 ```
 
 **Supported firmware formats:**
@@ -123,7 +123,7 @@ go mod download
 
 ## Features
 
-### RT880-Flasher
+### RT6D-Flasher
 - Automatic detection of available serial ports
 - Support for Intel HEX and binary files
 - Communication protocol with retries and timeouts
@@ -134,7 +134,7 @@ go mod download
 ### Hex2Bin
 - Accurate Intel HEX to binary conversion
 - Support for extended address records
-- RT880-specific ARM address mapping
+- RT6D-specific ARM address mapping
 - Format validation
 
 ### SPI Tool
@@ -154,8 +154,8 @@ go mod download
 - `go.mod` / `go.sum` - Go dependency configuration
 
 ### Compiled Binaries
-- `rt880-flasher` - Main flasher executable
-- `rt880-flasher-windows-arm64` - Windows ARM64 build
+- `rt6d-flasher` - Main flasher executable
+- `rt6d-flasher-windows-arm64` - Windows ARM64 build
 - `hex2bin` - Converter executable
 - `spi-tool` - SPI tool executable
 - `spi-flash` - Alternative SPI flash executable
@@ -198,14 +198,14 @@ go mod download
 
 ```bash
 # Linux AMD64
-GOOS=linux GOARCH=amd64 go build -o rt880-flasher-linux main.go
+GOOS=linux GOARCH=amd64 go build -o rt6d-flasher-linux main.go
 
 # Windows AMD64
-GOOS=windows GOARCH=amd64 go build -o rt880-flasher.exe main.go
+GOOS=windows GOARCH=amd64 go build -o rt6d-flasher.exe main.go
 
 # macOS (Intel)
-GOOS=darwin GOARCH=amd64 go build -o rt880-flasher-macos-intel main.go
+GOOS=darwin GOARCH=amd64 go build -o rt6d-flasher-macos-intel main.go
 
 # macOS (Apple Silicon)
-GOOS=darwin GOARCH=arm64 go build -o rt880-flasher-macos-m1 main.go
+GOOS=darwin GOARCH=arm64 go build -o rt6d-flasher-macos-m1 main.go
 ```
