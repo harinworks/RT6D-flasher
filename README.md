@@ -138,7 +138,7 @@ go mod download
 - Format validation
 
 ### SPI Tool
-- Complete SPI flash backup (4MB)
+- Complete SPI flash backup (32MB)
 - SPI flash restore from backup file
 - Block-by-block operation with progress indication
 - Checksum verification for data integrity
