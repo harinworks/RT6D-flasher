@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strconv"
 	"time"
 
 	"go.bug.st/serial"
@@ -362,9 +363,9 @@ func (s *SPITool) printHex(data []byte) {
 	fmt.Println()
 }
 
-func (s *SPITool) connectToPort(portName string) error {
+func (s *SPITool) connectToPort(portName string, baudRate int) error {
 	mode := &serial.Mode{
-		BaudRate: 115200,
+		BaudRate: baudRate,
 		DataBits: 8,
 		Parity:   serial.NoParity,
 		StopBits: serial.OneStopBit,
@@ -394,7 +395,7 @@ func (s *SPITool) disconnect() {
 }
 
 func showUsage() {
-	fmt.Printf("Usage: %s <command> <port> <file>\n", os.Args[0])
+	fmt.Printf("Usage: %s <command> <port> <file> [baudrate]\n", os.Args[0])
 	fmt.Println("\nCommands:")
 	fmt.Println("  backup   - Backup SPI flash to file")
 	fmt.Println("  restore  - Restore SPI flash from file")
@@ -402,8 +403,8 @@ func showUsage() {
 	fmt.Println("  port     - Serial port (e.g., /dev/ttyUSB0, COM3)")
 	fmt.Println("  file     - Backup/restore file path")
 	fmt.Println("\nExamples:")
-	fmt.Printf("  %s backup /dev/cu.wchusbserial112410 spi_backup.bin\n", os.Args[0])
-	fmt.Printf("  %s restore /dev/cu.wchusbserial112410 spi_backup.bin\n", os.Args[0])
+	fmt.Printf("  %s backup /dev/cu.wchusbserial112410 spi_backup.bin 115200\n", os.Args[0])
+	fmt.Printf("  %s restore /dev/cu.wchusbserial112410 spi_backup.bin 115200\n", os.Args[0])
 	fmt.Println("\nAvailable serial ports:")
 	
 	tool := NewSPITool()
@@ -414,7 +415,7 @@ func showUsage() {
 }
 
 func main() {
-	if len(os.Args) != 4 {
+	if len(os.Args) < 4 {
 		showUsage()
 		os.Exit(1)
 	}
@@ -430,6 +431,17 @@ func main() {
 		os.Exit(1)
 	}
 	
+	// Set default baud rate if not provided
+	baudRate := 115200
+	if len(os.Args) >= 5 {
+		var err error
+		baudRate, err = strconv.Atoi(os.Args[4])
+		if err != nil {
+			fmt.Printf("Error: Invalid baud rate '%s'. Using default: 115200\n", os.Args[4])
+			baudRate = 115200
+		}
+	}
+	
 	// Verify port exists
 	tool := NewSPITool()
 	ports := tool.getAvailablePorts()
@@ -442,20 +454,20 @@ func main() {
 	}
 	
 	if !portFound {
-		fmt.Printf("Error: Port '%s' not found\n\n", portName)
+		fmt.Printf("Error: Port '%s (%d)' not found\n\n", portName, baudRate)
 		showUsage()
 		os.Exit(1)
 	}
 	
 	// Connect to port
-	err := tool.connectToPort(portName)
+	err := tool.connectToPort(portName, baudRate)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
 	}
 	defer tool.disconnect()
 	
-	fmt.Printf("Connected to port: %s\n", portName)
+	fmt.Printf("Connected to port: %s (%d)\n", portName, baudRate)
 	fmt.Printf("Command: %s\n", command)
 	fmt.Printf("File: %s\n", filename)
 	fmt.Println()

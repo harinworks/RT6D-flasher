@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strconv"
 	"time"
 
 	"go.bug.st/serial"
@@ -52,9 +53,9 @@ func (s *SPIFlash) printHex(data []byte) {
 	fmt.Println()
 }
 
-func (s *SPIFlash) connectToPort(portName string) error {
+func (s *SPIFlash) connectToPort(portName string, baudRate int) error {
 	mode := &serial.Mode{
-		BaudRate: 115200,
+		BaudRate: baudRate,
 		DataBits: 8,
 		Parity:   serial.NoParity,
 		StopBits: serial.OneStopBit,
@@ -182,13 +183,13 @@ func (s *SPIFlash) disconnect() {
 }
 
 func showUsage() {
-	fmt.Printf("Usage: %s <port> <backup_file>\n", os.Args[0])
+	fmt.Printf("Usage: %s <port> <backup_file> [baudrate]\n", os.Args[0])
 	fmt.Println("\nArguments:")
 	fmt.Println("  port        Serial port (e.g., /dev/ttyUSB0, COM3)")
 	fmt.Println("  backup_file Output file for SPI flash backup")
 	fmt.Println("\nExamples:")
-	fmt.Printf("  %s /dev/cu.wchusbserial112410 spi_backup.bin\n", os.Args[0])
-	fmt.Printf("  %s COM3 spi_backup.bin\n", os.Args[0])
+	fmt.Printf("  %s /dev/cu.wchusbserial112410 spi_backup.bin 115200\n", os.Args[0])
+	fmt.Printf("  %s COM3 spi_backup.bin 115200\n", os.Args[0])
 	fmt.Println("\nAvailable serial ports:")
 	
 	flasher := NewSPIFlash()
@@ -199,13 +200,24 @@ func showUsage() {
 }
 
 func main() {
-	if len(os.Args) != 3 {
+	if len(os.Args) < 3 {
 		showUsage()
 		os.Exit(1)
 	}
 	
 	portName := os.Args[1]
 	filename := os.Args[2]
+	
+	// Set default baud rate if not provided
+	baudRate := 115200
+	if len(os.Args) >= 4 {
+		var err error
+		baudRate, err = strconv.Atoi(os.Args[3])
+		if err != nil {
+			fmt.Printf("Error: Invalid baud rate '%s'. Using default: 115200\n", os.Args[4])
+			baudRate = 115200
+		}
+	}
 	
 	// Verify port exists
 	flasher := NewSPIFlash()
@@ -219,20 +231,20 @@ func main() {
 	}
 	
 	if !portFound {
-		fmt.Printf("Error: Port '%s' not found\n\n", portName)
+		fmt.Printf("Error: Port '%s (%d)' not found\n\n", portName, baudRate)
 		showUsage()
 		os.Exit(1)
 	}
 	
 	// Connect to port
-	err := flasher.connectToPort(portName)
+	err := flasher.connectToPort(portName, baudRate)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
 	}
 	defer flasher.disconnect()
 	
-	fmt.Printf("Connected to port: %s\n", portName)
+	fmt.Printf("Connected to port: %s (%d)\n", portName, baudRate)
 	fmt.Printf("Output file: %s\n", filename)
 	fmt.Println()
 	
