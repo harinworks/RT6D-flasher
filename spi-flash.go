@@ -16,7 +16,8 @@ type SPIFlash struct {
 
 const (
 	CHUNK_SIZE     = 1024
-	SPI_FLASH_SIZE = 32 * 1024 * 1024 // 32MB
+	SPI_FLASH_SIZE = 4 * 1024 * 1024 // 4MB
+	SPI_FLASH_FULL_SIZE = 32 * 1024 * 1024 // 32MB
 )
 
 func NewSPIFlash() *SPIFlash {
@@ -128,7 +129,7 @@ func (s *SPIFlash) dumpSPIFlash(filename string) error {
 	}
 	defer file.Close()
 	
-	for offset := uint32(0); offset < 32768; offset++ { // 32MB / 1024 = 32768 iteraciones
+	for offset := uint32(0); offset < 4096; offset++ { // 4MB / 1024 = 4096 iteraciones
 		maxRetries := 3
 		var data []byte
 		
@@ -157,7 +158,7 @@ func (s *SPIFlash) dumpSPIFlash(filename string) error {
 		
 		// Progress indication
 		if (offset+1)%100 == 0 {
-			progress := float64(offset+1) / 32768.0 * 100
+			progress := float64(offset+1) / 4096.0 * 100
 			fmt.Printf(" (%.1f%%)", progress)
 		}
 	}

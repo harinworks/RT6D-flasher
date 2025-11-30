@@ -16,7 +16,8 @@ type SPITool struct {
 
 const (
 	CHUNK_SIZE    = 1024
-	SPI_FLASH_SIZE = 32 * 1024 * 1024 // 32MB typical SPI flash size
+	SPI_FLASH_SIZE = 4 * 1024 * 1024 // 4MB typical SPI flash size
+	SPI_FLASH_FULL_SIZE = 32 * 1024 * 1024 // 32MB full SPI flash size
 )
 
 // SPI Commands based on the Rust code
@@ -238,8 +239,8 @@ func (s *SPITool) backupSPIFlash(filename string) error {
 	}
 	defer file.Close()
 	
-	// 32768 blocks of 1024 bytes = 32MB total
-	totalBlocks := 32768
+	// 4096 blocks of 1024 bytes = 4MB total
+	totalBlocks := 4096
 	
 	for block := 0; block < totalBlocks; block++ {
 		blockNum := uint16(block)
